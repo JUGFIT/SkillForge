@@ -1,2 +1,42 @@
+# ===============================
+# 🧠 SkillForge Project Gitignore
+# ===============================
+
+# Environment
 .env
-.env
+.env.*
+
+# Virtual environment
+.venv/
+venv/
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# OS & Editor junk
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+*.pid
+*.sock
+
+# Coverage / testing
+.coverage
+htmlcov/
+.pytest_cache/
