@@ -1,7 +1,9 @@
 import os
 import sys
 from logging.config import fileConfig
+
 from sqlalchemy import engine_from_config, pool
+
 from alembic import context
 
 # --------------------------------------------------------------------
@@ -15,12 +17,12 @@ if APP_DIR not in sys.path:
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from app import models
+from app.core.config import settings
 # --------------------------------------------------------------------
 # Import app Base + models
 # --------------------------------------------------------------------
 from app.core.database import Base
-from app import models
-from app.core.config import settings
 
 # --------------------------------------------------------------------
 # Alembic Config Setup - BULLETPROOF INTERPOLATION FIX
@@ -29,14 +31,15 @@ config = context.config
 
 # 🛡 CRITICAL FIX: Override the internal file_config to disable interpolation
 # This must happen BEFORE any set_main_option calls
-if hasattr(config, 'file_config'):
+if hasattr(config, "file_config"):
     # Save the old parser
     old_parser = config.file_config
-    
+
     # Import ConfigParser with no interpolation
     from configparser import ConfigParser
+
     new_parser = ConfigParser(interpolation=None)
-    
+
     # Copy all sections from the old parser
     for section in old_parser.sections():
         if not new_parser.has_section(section):
@@ -44,7 +47,7 @@ if hasattr(config, 'file_config'):
         for option in old_parser.options(section):
             value = old_parser.get(section, option, raw=True)
             new_parser.set(section, option, value)
-    
+
     # Replace the file_config completely
     config.file_config = new_parser
 
