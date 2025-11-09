@@ -1,0 +1,137 @@
+# =====================================================================
+# SkillStack 2.0 — Production-grade Docker Compose configuration
+# Services: Postgres, Redis, Migrate, Web (FastAPI), Worker, Flower
+# =====================================================================
+
+services:
+  # ---------------------------------------------------------------
+  # 🗄 PostgreSQL Database
+  # ---------------------------------------------------------------
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - skillstack
+
+  # ---------------------------------------------------------------
+  # ⚡ Redis Cache / Celery Broker
+  # ---------------------------------------------------------------
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillstack
+
+  # ---------------------------------------------------------------
+  # 🧩 Alembic Migration Service (One-shot)
+  # ---------------------------------------------------------------
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head && echo '✅ Alembic migrations complete.'"
+    restart: "no"
+    networks:
+      - skillstack
+
+  # ---------------------------------------------------------------
+  # 🚀 FastAPI Application
+  # ---------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: ["/app/docker/entrypoint.sh", "web"]
+    restart: unless-stopped
+    networks:
+      - skillstack
+
+  # ---------------------------------------------------------------
+  # 🧵 Celery Worker (Async Tasks)
+  # ---------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    depends_on:
+      - redis
+      - postgres
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    command: ["/app/docker/entrypoint.sh", "worker"]
+    restart: unless-stopped
+    networks:
+      - skillstack
+
+  # ---------------------------------------------------------------
+  # 🌸 Flower Dashboard (Celery Monitoring)
+  # ---------------------------------------------------------------
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: flower
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "5555:5555"
+    command: ["/app/docker/entrypoint.sh", "flower"]
+    restart: unless-stopped
+    networks:
+      - skillstack
+
+# ---------------------------------------------------------------
+# 🧱 Shared Volumes and Networks
+# ---------------------------------------------------------------
+volumes:
+  postgres_data:
+
+networks:
+  skillstack:
+    driver: bridge
