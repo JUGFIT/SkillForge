@@ -8,6 +8,7 @@ from uuid import UUID
 # 👤 BASE SCHEMAS
 # ============================================================
 
+
 class UserBase(BaseModel):
     username: constr(min_length=3, max_length=50)
     email: EmailStr

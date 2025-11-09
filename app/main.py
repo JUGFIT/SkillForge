@@ -92,4 +92,5 @@ def root():
         "version": settings.VERSION,
     }
 
+
 # source .venv/Scripts/activate

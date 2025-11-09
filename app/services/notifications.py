@@ -7,14 +7,10 @@ import google.generativeai as genai
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
+
 def create_notification(db: Session, user_id: str, title: str, message: str):
     """Store a new notification in the DB."""
-    notif = Notification(
-        user_id=user_id,
-        title=title,
-        message=message,
-        is_read=False
-    )
+    notif = Notification(user_id=user_id, title=title, message=message, is_read=False)
     db.add(notif)
     db.commit()
     db.refresh(notif)
@@ -59,7 +55,7 @@ def send_study_summary(db: Session, user_id: str):
             "concept_id": str(s.concept_id),
             "duration": s.duration_minutes,
             "score": s.understanding_score,
-            "notes": s.reflection_notes
+            "notes": s.reflection_notes,
         }
         for s in recent_sessions
     ]

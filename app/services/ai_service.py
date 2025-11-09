@@ -5,12 +5,15 @@ from app.core.config import settings
 
 logger = logging.getLogger("skillstack.ai")
 
+
 # -------------------- Provider Interfaces --------------------
 class AIProvider:
     def generate_project_idea(self, goal: str, skill_level: str):
         raise NotImplementedError
 
-    def generate_roadmap(self, title: str, goal: str, duration_weeks: int, skill_level: str):
+    def generate_roadmap(
+        self, title: str, goal: str, duration_weeks: int, skill_level: str
+    ):
         raise NotImplementedError
 
     def generate_tasks(self, title: str, description: str, roadmap_context: str = None):
@@ -68,9 +71,16 @@ class MockAIProvider(AIProvider):
 
     def generate_roadmap(self, title, goal, duration_weeks, skill_level):
         return {
-            "roadmap_steps": [f"Week {i+1}: Learn {topic}" for i, topic in enumerate(["FastAPI", "PostgreSQL", "React"])],
+            "roadmap_steps": [
+                f"Week {i+1}: Learn {topic}"
+                for i, topic in enumerate(["FastAPI", "PostgreSQL", "React"])
+            ],
             "estimated_time_per_week": 5,
-            "learning_outcomes": ["REST API basics", "Database design", "Frontend integration"],
+            "learning_outcomes": [
+                "REST API basics",
+                "Database design",
+                "Frontend integration",
+            ],
         }
 
     def generate_tasks(self, title, description, roadmap_context=None):

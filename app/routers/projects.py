@@ -54,7 +54,9 @@ def create_project(
         .first()
     )
     if existing:
-        raise HTTPException(status_code=400, detail="Project with this name already exists")
+        raise HTTPException(
+            status_code=400, detail="Project with this name already exists"
+        )
 
     new_project = Project(
         name=project_in.name,
@@ -78,8 +80,11 @@ def create_project(
     db.commit()
 
     log_activity(
-        db, new_project.id, current_user.id, "project_created",
-        f"Project '{new_project.name}' created"
+        db,
+        new_project.id,
+        current_user.id,
+        "project_created",
+        f"Project '{new_project.name}' created",
     )
 
     return new_project
@@ -113,11 +118,16 @@ def get_project(
     # Allow access to owner or active member
     is_member = (
         db.query(ProjectMember)
-        .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == current_user.id)
+        .filter(
+            ProjectMember.project_id == project_id,
+            ProjectMember.user_id == current_user.id,
+        )
         .first()
     )
     if not (project.owner_id == current_user.id or is_member):
-        raise HTTPException(status_code=403, detail="Not authorized to view this project")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to view this project"
+        )
 
     return project
 
@@ -137,14 +147,22 @@ def update_project(
         raise HTTPException(status_code=404, detail="Project not found")
 
     if project.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Only project owner can update the project")
+        raise HTTPException(
+            status_code=403, detail="Only project owner can update the project"
+        )
 
     for field, value in project_in.dict(exclude_unset=True).items():
         setattr(project, field, value)
 
     db.commit()
     db.refresh(project)
-    log_activity(db, project.id, current_user.id, "project_updated", f"Updated project '{project.name}'")
+    log_activity(
+        db,
+        project.id,
+        current_user.id,
+        "project_updated",
+        f"Updated project '{project.name}'",
+    )
 
     return project
 
@@ -163,13 +181,21 @@ def delete_project(
         raise HTTPException(status_code=404, detail="Project not found")
 
     if project.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Only owner can archive/delete the project")
+        raise HTTPException(
+            status_code=403, detail="Only owner can archive/delete the project"
+        )
 
     project.status = "archived"
     project.is_active = False
     db.commit()
 
-    log_activity(db, project.id, current_user.id, "project_archived", f"Archived project '{project.name}'")
+    log_activity(
+        db,
+        project.id,
+        current_user.id,
+        "project_archived",
+        f"Archived project '{project.name}'",
+    )
     return None
 
 
@@ -177,9 +203,13 @@ def delete_project(
 # 🔁 Ownership Transfer (Professional Version)
 # ============================================================
 
+
 class OwnershipTransferRequest(BaseModel):
     """Validated schema for ownership transfer"""
-    new_owner_id: UUID = Field(..., description="UUID of the user to transfer ownership to")
+
+    new_owner_id: UUID = Field(
+        ..., description="UUID of the user to transfer ownership to"
+    )
 
 
 @router.patch("/{project_id}/transfer", status_code=status.HTTP_200_OK)
@@ -200,16 +230,23 @@ def transfer_ownership(
         raise HTTPException(status_code=404, detail="Project not found")
 
     if project.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Only the current owner can transfer ownership")
+        raise HTTPException(
+            status_code=403, detail="Only the current owner can transfer ownership"
+        )
 
     # Validate the target member
     new_owner_member = (
         db.query(ProjectMember)
-        .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == new_owner_id)
+        .filter(
+            ProjectMember.project_id == project_id,
+            ProjectMember.user_id == new_owner_id,
+        )
         .first()
     )
     if not new_owner_member:
-        raise HTTPException(status_code=404, detail="New owner must be an existing project member")
+        raise HTTPException(
+            status_code=404, detail="New owner must be an existing project member"
+        )
 
     try:
         old_owner_id = project.owner_id
@@ -218,7 +255,7 @@ def transfer_ownership(
         project.owner_id = new_owner_id
         db.query(ProjectMember).filter(
             ProjectMember.project_id == project_id,
-            ProjectMember.user_id == old_owner_id
+            ProjectMember.user_id == old_owner_id,
         ).update({"role": "member"})
 
         new_owner_member.role = "owner"
@@ -235,14 +272,16 @@ def transfer_ownership(
 
         # Notify both parties
         create_notification(
-            db, new_owner_id,
+            db,
+            new_owner_id,
             title="You Are Now the Project Owner",
-            message=f"You have been made the owner of project '{project.name}'."
+            message=f"You have been made the owner of project '{project.name}'.",
         )
         create_notification(
-            db, old_owner_id,
+            db,
+            old_owner_id,
             title="Ownership Transferred",
-            message=f"You transferred ownership of '{project.name}' to another member."
+            message=f"You transferred ownership of '{project.name}' to another member.",
         )
 
         db.refresh(project)

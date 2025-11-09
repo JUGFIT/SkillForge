@@ -28,6 +28,7 @@ limiter = Limiter(
     storage_uri=settings.REDIS_URL if redis_client else "memory://",
 )
 
+
 # ------------------------------------------------------------------
 # 🔗 Attach to app
 # ------------------------------------------------------------------

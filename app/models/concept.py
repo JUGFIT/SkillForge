@@ -21,14 +21,14 @@ class Concept(Base):
         "RoadmapStep",
         back_populates="concept",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
 
     progress_entries = relationship(
         "UserProgress",
         back_populates="concept",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
 
     def __repr__(self):

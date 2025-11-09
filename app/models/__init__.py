@@ -9,7 +9,7 @@ from app.models.comment import Comment
 from app.models.refresh_token import RefreshToken
 from app.models.roadmap import Roadmap
 from app.models.roadmap_step import RoadmapStep
-from app.models.roadmap_template import RoadmapTemplate  
+from app.models.roadmap_template import RoadmapTemplate
 from app.models.study_session import StudySession
 from app.models.user_progress import UserProgress
 from app.models.learning_concept import LearningConcept

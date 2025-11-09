@@ -6,6 +6,7 @@ from app.core.database import SessionLocal
 
 logger = logging.getLogger("skillstack.startup")
 
+
 def init_database():
     """
     Runs at FastAPI startup — verifies database connectivity

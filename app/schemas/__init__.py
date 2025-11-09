@@ -12,8 +12,12 @@ from app.schemas.project import (
 )
 
 __all__ = [
-    "ProjectBase", "ProjectResponse",
-    "TaskResponse", "TaskCreate", "TaskUpdate",
-    "TaskCommentCreate", "TaskCommentResponse",
-    "TaskAnalyticsResponse"
+    "ProjectBase",
+    "ProjectResponse",
+    "TaskResponse",
+    "TaskCreate",
+    "TaskUpdate",
+    "TaskCommentCreate",
+    "TaskCommentResponse",
+    "TaskAnalyticsResponse",
 ]

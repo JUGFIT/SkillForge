@@ -33,9 +33,7 @@ def enqueue(task_fn, *args, bg: BackgroundTasks = None, **kwargs):
         bg.add_task(task_fn, *args, **kwargs)
         logger.debug(f"🌀 BackgroundTasks scheduled: {task_name}")
     else:
-        threading.Thread(
-            target=task_fn, args=args, kwargs=kwargs, daemon=True
-        ).start()
+        threading.Thread(target=task_fn, args=args, kwargs=kwargs, daemon=True).start()
         logger.debug(f"🧵 Threaded background job launched: {task_name}")
 
 
@@ -43,7 +41,9 @@ def background_task(func):
     """
     Decorator to mark a function as enqueueable task.
     """
+
     def wrapper(*args, **kwargs):
         enqueue(func, *args, **kwargs)
+
     wrapper.__name__ = func.__name__
     return wrapper

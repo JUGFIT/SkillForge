@@ -1,9 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.ai import (
-    AIProjectIdeaRequest, AIProjectIdeaResponse,
-    AIRoadmapRequest, AIRoadmapResponse,
-    AITaskGenerationRequest, AITaskResponse,
-    AIQuestionRequest, AIAnswerResponse
+    AIProjectIdeaRequest,
+    AIProjectIdeaResponse,
+    AIRoadmapRequest,
+    AIRoadmapResponse,
+    AITaskGenerationRequest,
+    AITaskResponse,
+    AIQuestionRequest,
+    AIAnswerResponse,
 )
 from app.services.ai_service import get_ai_provider
 
@@ -20,7 +24,7 @@ def generate_project_idea(req: AIProjectIdeaRequest):
                 title="Generated Project",
                 description=result,
                 tags=["learning", "ai"],
-                suggested_stack=["FastAPI", "React"]
+                suggested_stack=["FastAPI", "React"],
             )
         return result
     except Exception as e:
@@ -30,12 +34,14 @@ def generate_project_idea(req: AIProjectIdeaRequest):
 @router.post("/roadmap", response_model=AIRoadmapResponse)
 def generate_roadmap(req: AIRoadmapRequest):
     try:
-        result = ai.generate_roadmap(req.project_title, req.goal, req.duration_weeks, req.skill_level)
+        result = ai.generate_roadmap(
+            req.project_title, req.goal, req.duration_weeks, req.skill_level
+        )
         if isinstance(result, str):
             return AIRoadmapResponse(
                 roadmap_steps=result.split("\n"),
                 estimated_time_per_week=6,
-                learning_outcomes=["Skill growth", "Practical experience"]
+                learning_outcomes=["Skill growth", "Practical experience"],
             )
         return result
     except Exception as e:
@@ -45,7 +51,9 @@ def generate_roadmap(req: AIRoadmapRequest):
 @router.post("/tasks", response_model=AITaskResponse)
 def generate_tasks(req: AITaskGenerationRequest):
     try:
-        result = ai.generate_tasks(req.project_title, req.description, req.roadmap_context)
+        result = ai.generate_tasks(
+            req.project_title, req.description, req.roadmap_context
+        )
         if isinstance(result, str):
             return AITaskResponse(tasks=result.split("\n"))
         return result

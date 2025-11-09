@@ -7,13 +7,10 @@ import json
 # --- Configure Gemini ---
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
+
 def get_user_learning_context(db: Session, user_id: str):
     """Collect user progress and concept context for AI prompt."""
-    progress_data = (
-        db.query(UserProgress)
-        .filter(UserProgress.user_id == user_id)
-        .all()
-    )
+    progress_data = db.query(UserProgress).filter(UserProgress.user_id == user_id).all()
     roadmap_steps = (
         db.query(RoadmapStep)
         .join(UserProgress, RoadmapStep.roadmap_id == UserProgress.roadmap_id)
@@ -27,16 +24,18 @@ def get_user_learning_context(db: Session, user_id: str):
             {
                 "concept_id": str(p.concept_id),
                 "progress": p.progress,
-                "completed": p.completed
-            } for p in progress_data
+                "completed": p.completed,
+            }
+            for p in progress_data
         ],
         "roadmap_steps": [
             {
                 "concept_id": str(r.concept_id),
                 "completed": r.completed,
-                "order": r.order_index
-            } for r in roadmap_steps
-        ]
+                "order": r.order_index,
+            }
+            for r in roadmap_steps
+        ],
     }
     return context
 

@@ -6,6 +6,7 @@ from app.core.cache import redis_lock
 
 logger = logging.getLogger(__name__)
 
+
 def normalize_roadmap_task(roadmap_id: str):
     """Safe roadmap normalization job — isolated session + lock."""
     lock_key = f"lock:roadmap:{roadmap_id}"

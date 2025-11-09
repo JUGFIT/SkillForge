@@ -8,8 +8,14 @@ import requests
 from app.core.database import get_db
 from app.models.users import User
 from app.schemas.auth import (
-    RegisterRequest, LoginRequest, RegisterResponse, TokenPair,
-    RefreshRequest, ForgotPasswordRequest, ResetPasswordRequest, UserProfile
+    RegisterRequest,
+    LoginRequest,
+    RegisterResponse,
+    TokenPair,
+    RefreshRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    UserProfile,
 )
 from app.utils import auth as auth_utils
 from app.core.config import settings
@@ -20,7 +26,9 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 # -----------------------------------------------------------
 # 🧩 REGISTER USER
 # -----------------------------------------------------------
-@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED
+)
 def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -39,12 +47,16 @@ def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Send verification email (optional async)
-    token = auth_utils.create_action_token(str(user.id), "verify", expires_minutes=60 * 24)
+    token = auth_utils.create_action_token(
+        str(user.id), "verify", expires_minutes=60 * 24
+    )
     print(f"🔐 EMAIL VERIFICATION TOKEN for {user.email}: {token}")
     auth_utils.send_verification_email(user.email, token)
-    
 
-    return {"message": "User registered successfully. Verification email sent.", "user": user}
+    return {
+        "message": "User registered successfully. Verification email sent.",
+        "user": user,
+    }
 
 
 # -----------------------------------------------------------
@@ -53,7 +65,9 @@ def register_user(payload: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenPair)
 def login_user(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
-    if not user or not auth_utils.verify_password(payload.password, user.hashed_password):
+    if not user or not auth_utils.verify_password(
+        payload.password, user.hashed_password
+    ):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     if not getattr(user, "is_verified", True):
@@ -62,14 +76,14 @@ def login_user(payload: LoginRequest, db: Session = Depends(get_db)):
     # Generate JWT access + refresh
     access = auth_utils.create_access_token(
         subject=str(user.id),
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     refresh_record = auth_utils.create_and_store_refresh_token(db, user)
 
     return {
         "access_token": access,
         "refresh_token": refresh_record.token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
 
 
@@ -90,13 +104,13 @@ def refresh_token(payload: RefreshRequest, db: Session = Depends(get_db)):
     new_rt = auth_utils.rotate_refresh_token(db, payload.refresh_token, user)
     access = auth_utils.create_access_token(
         subject=str(user.id),
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
     return {
         "access_token": access,
         "refresh_token": new_rt.token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
 
 
@@ -192,7 +206,9 @@ def google_oauth_callback(request: Request, db: Session = Depends(get_db)):
     id_token = tokens.get("id_token")
 
     # Verify the ID token via Google's public API
-    user_info = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}").json()
+    user_info = requests.get(
+        f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
+    ).json()
     email = user_info.get("email")
     name = user_info.get("name")
 
@@ -220,9 +236,11 @@ def google_oauth_callback(request: Request, db: Session = Depends(get_db)):
     )
     refresh_record = auth_utils.create_and_store_refresh_token(db, user)
 
-    return JSONResponse({
-        "access_token": access,
-        "refresh_token": refresh_record.token,
-        "token_type": "bearer",
-        "message": "Google OAuth login successful"
-    })
+    return JSONResponse(
+        {
+            "access_token": access,
+            "refresh_token": refresh_record.token,
+            "token_type": "bearer",
+            "message": "Google OAuth login successful",
+        }
+    )

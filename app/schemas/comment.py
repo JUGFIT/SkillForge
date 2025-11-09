@@ -9,6 +9,7 @@ from uuid import UUID
 # 💬 COMMENT SCHEMAS
 # ============================================================
 
+
 class CommentBase(BaseModel):
     content: constr(min_length=1, max_length=300)
 

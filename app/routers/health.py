@@ -10,6 +10,7 @@ from app.core.config import settings
 
 router = APIRouter(prefix="/health", tags=["System"])
 
+
 @router.get("/")
 def health_check():
     """
@@ -44,6 +45,7 @@ def health_check():
     if settings.USE_CELERY:
         try:
             from app.core.task_executor import celery_app
+
             result = celery_app.control.ping(timeout=1)
             celery_status = "ok" if result else "error"
         except Exception:
@@ -54,7 +56,14 @@ def health_check():
 
     # --- Response ---
     return {
-        "status": "ok" if all(s == "ok" or s == "disabled" for s in [db_status, redis_status, celery_status]) else "degraded",
+        "status": (
+            "ok"
+            if all(
+                s == "ok" or s == "disabled"
+                for s in [db_status, redis_status, celery_status]
+            )
+            else "degraded"
+        ),
         "services": {
             "database": db_status,
             "redis": redis_status,
@@ -64,6 +73,6 @@ def health_check():
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "elapsed_ms": elapsed_ms,
             "environment": settings.APP_ENV,
-            "service": "SkillStack 2.0 API"
+            "service": "SkillStack 2.0 API",
         },
     }

@@ -16,7 +16,7 @@ router = APIRouter(prefix="/concepts", tags=["Concepts"])
 def create_concept(
     concept_in: ConceptCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Create a new concept (admin or roadmap owner context)."""
     concept = Concept(**concept_in.dict())
@@ -31,10 +31,16 @@ def list_concepts(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
 ):
     """✅ List all active concepts."""
-    concepts = db.query(Concept).filter(Concept.is_active == True).offset(skip).limit(limit).all()
+    concepts = (
+        db.query(Concept)
+        .filter(Concept.is_active == True)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return concepts
 
 
@@ -42,7 +48,7 @@ def list_concepts(
 def get_concept(
     concept_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Retrieve a concept by ID."""
     concept = db.query(Concept).filter(Concept.id == concept_id).first()
@@ -56,7 +62,7 @@ def update_concept(
     concept_id: UUID,
     concept_update: ConceptUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Update concept details."""
     concept = db.query(Concept).filter(Concept.id == concept_id).first()
@@ -75,7 +81,7 @@ def update_concept(
 def delete_concept(
     concept_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Soft delete concept by marking inactive."""
     concept = db.query(Concept).filter(Concept.id == concept_id).first()

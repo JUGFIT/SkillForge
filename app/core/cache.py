@@ -9,6 +9,7 @@ from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
 
+
 # -------------------------------------------------------------------
 # 🚀 Redis Connection Setup (Robust + Retry)
 # -------------------------------------------------------------------
@@ -27,7 +28,9 @@ def create_redis_connection(retries: int = 5, delay: int = 2) -> Redis:
             logger.info("✅ Connected to Redis successfully.")
             return client
         except (ConnectionError, TimeoutError) as e:
-            logger.warning(f"⚠️ Redis connection failed (attempt {attempt + 1}/{retries}): {e}")
+            logger.warning(
+                f"⚠️ Redis connection failed (attempt {attempt + 1}/{retries}): {e}"
+            )
             time.sleep(delay)
     logger.error("❌ Could not connect to Redis after multiple attempts.")
     raise ConnectionError("Redis is not available.")
@@ -35,6 +38,7 @@ def create_redis_connection(retries: int = 5, delay: int = 2) -> Redis:
 
 # Initialize global client
 _redis = create_redis_connection()
+
 
 # -------------------------------------------------------------------
 # 🔒 Distributed Lock (Safe for Multi-worker)
@@ -60,6 +64,7 @@ def redis_lock(lock_key: str, ttl: int = 10, retry_interval: float = 0.2):
                 _redis.delete(lock_key)
         except Exception as e:
             logger.error(f"Failed to release Redis lock {lock_key}: {e}")
+
 
 # -------------------------------------------------------------------
 # ⚡ Caching Utilities (JSON-safe)

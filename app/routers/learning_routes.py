@@ -6,6 +6,7 @@ from app.services.learning_loop import run_learning_loop
 
 router = APIRouter(prefix="/learning", tags=["Learning Intelligence"])
 
+
 @router.post("/loop")
 def execute_learning_loop(
     concept_id: str,
@@ -16,7 +17,9 @@ def execute_learning_loop(
 ):
     """Full AI-powered learning loop (progress → reflection → next suggestion)."""
     try:
-        data = run_learning_loop(db, user.id, concept_id, duration_minutes, understanding_score)
+        data = run_learning_loop(
+            db, user.id, concept_id, duration_minutes, understanding_score
+        )
         return {"user": user.username, **data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

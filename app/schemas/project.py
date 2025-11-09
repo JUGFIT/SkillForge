@@ -45,6 +45,7 @@ class ProjectResponse(ProjectBase):
     class Config:
         from_attributes = True
 
+
 # ============================================================
 # 🧩 PROJECT MEMBERSHIP SCHEMAS
 # ============================================================
@@ -77,6 +78,7 @@ class ProjectMemberResponse(ProjectMemberBase):
 # ============================================================
 # ✉️ INVITE SCHEMAS
 # ============================================================
+
 
 class InviteCreate(BaseModel):
     project_id: UUID

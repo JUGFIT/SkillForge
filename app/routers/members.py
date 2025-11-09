@@ -14,7 +14,14 @@ router = APIRouter(prefix="/members", tags=["Project Members"])
 
 
 # Utility: create an activity log entry
-def log_activity(db: Session, project_id: UUID, user_id: UUID, action: str, details: str = "", metadata: dict | None = None):
+def log_activity(
+    db: Session,
+    project_id: UUID,
+    user_id: UUID,
+    action: str,
+    details: str = "",
+    metadata: dict | None = None,
+):
     activity = models.ActivityLog(
         project_id=project_id,
         user_id=user_id,
@@ -27,7 +34,11 @@ def log_activity(db: Session, project_id: UUID, user_id: UUID, action: str, deta
     return activity
 
 
-@router.post("/", response_model=schemas.ProjectMemberResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=schemas.ProjectMemberResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def add_member(
     member_in: schemas.ProjectMemberCreate,
     db: Session = Depends(get_db),
@@ -39,11 +50,15 @@ def add_member(
 
     # Only owner can directly add members
     if project.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to manage members for this project")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to manage members for this project"
+        )
 
-    existing = db.query(models.ProjectMember).filter_by(
-        project_id=member_in.project_id, user_id=member_in.user_id
-    ).first()
+    existing = (
+        db.query(models.ProjectMember)
+        .filter_by(project_id=member_in.project_id, user_id=member_in.user_id)
+        .first()
+    )
     if existing:
         raise HTTPException(status_code=400, detail="User is already a member")
 
@@ -54,7 +69,7 @@ def add_member(
         status="active",
         invited_by=current_user.id,
         joined_at=datetime.utcnow(),
-        meta={"added_via": "direct_add"}
+        meta={"added_via": "direct_add"},
     )
 
     db.add(new_member)
@@ -62,12 +77,20 @@ def add_member(
     db.refresh(new_member)
 
     # Activity + Notification
-    log_activity(db, project.id, current_user.id, "member_added",
-                 f"Added member {member_in.user_id} to project '{project.name}'")
+    log_activity(
+        db,
+        project.id,
+        current_user.id,
+        "member_added",
+        f"Added member {member_in.user_id} to project '{project.name}'",
+    )
     if member_in.user_id:
-        create_notification(db, member_in.user_id,
-                            title="Added to Project",
-                            message=f"You were added to project '{project.name}' by {current_user.username}")
+        create_notification(
+            db,
+            member_in.user_id,
+            title="Added to Project",
+            message=f"You were added to project '{project.name}' by {current_user.username}",
+        )
 
     return new_member
 
@@ -104,7 +127,10 @@ def update_member(
     member = (
         db.query(models.ProjectMember)
         .join(models.Project)
-        .filter(models.ProjectMember.id == member_id, models.Project.owner_id == current_user.id)
+        .filter(
+            models.ProjectMember.id == member_id,
+            models.Project.owner_id == current_user.id,
+        )
         .first()
     )
     if not member:
@@ -118,12 +144,20 @@ def update_member(
     db.refresh(member)
 
     # Activity + Notification
-    log_activity(db, member.project_id, current_user.id, "member_updated",
-                 f"Updated member {member.user_id or ''} (role {old_role} → {member.role})")
+    log_activity(
+        db,
+        member.project_id,
+        current_user.id,
+        "member_updated",
+        f"Updated member {member.user_id or ''} (role {old_role} → {member.role})",
+    )
     if member.user_id:
-        create_notification(db, member.user_id,
-                            title="Membership Updated",
-                            message=f"Your project role was updated in '{member.project.name}'")
+        create_notification(
+            db,
+            member.user_id,
+            title="Membership Updated",
+            message=f"Your project role was updated in '{member.project.name}'",
+        )
 
     return member
 
@@ -137,7 +171,10 @@ def remove_member(
     member = (
         db.query(models.ProjectMember)
         .join(models.Project)
-        .filter(models.ProjectMember.id == member_id, models.Project.owner_id == current_user.id)
+        .filter(
+            models.ProjectMember.id == member_id,
+            models.Project.owner_id == current_user.id,
+        )
         .first()
     )
     if not member:
@@ -150,10 +187,18 @@ def remove_member(
     db.commit()
 
     # Activity + Notification
-    log_activity(db, member.project_id, current_user.id, "member_removed",
-                 f"Removed member {target_user_id} from project '{project_name}'")
+    log_activity(
+        db,
+        member.project_id,
+        current_user.id,
+        "member_removed",
+        f"Removed member {target_user_id} from project '{project_name}'",
+    )
     if target_user_id:
-        create_notification(db, target_user_id,
-                            title="Removed from Project",
-                            message=f"You were removed from project '{project_name}' by {current_user.username}")
+        create_notification(
+            db,
+            target_user_id,
+            title="Removed from Project",
+            message=f"You were removed from project '{project_name}' by {current_user.username}",
+        )
     return None

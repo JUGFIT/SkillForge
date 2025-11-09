@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Text, Boolean, ForeignKey, TIMESTAMP, fun
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 
+
 class Notification(Base):
     __tablename__ = "notifications"
 

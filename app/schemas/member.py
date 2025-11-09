@@ -7,7 +7,9 @@ from pydantic import BaseModel, Field
 
 class ProjectMemberBase(BaseModel):
     project_id: UUID
-    role: Optional[str] = Field(default="member", description="member / owner / admin / invitee")
+    role: Optional[str] = Field(
+        default="member", description="member / owner / admin / invitee"
+    )
     status: Optional[str] = Field(default="active")
 
 

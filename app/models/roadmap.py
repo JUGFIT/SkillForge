@@ -1,6 +1,13 @@
 import uuid
 from sqlalchemy import (
-    Column, String, Text, Boolean, ForeignKey, Integer, TIMESTAMP, func
+    Column,
+    String,
+    Text,
+    Boolean,
+    ForeignKey,
+    Integer,
+    TIMESTAMP,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
@@ -16,9 +23,19 @@ class Roadmap(Base):
     category = Column(String(100), nullable=True)
     difficulty = Column(Integer, nullable=True)
     is_public = Column(Boolean, default=False)
-    owner_id = Column(PG_UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    template_id = Column(PG_UUID(as_uuid=True), ForeignKey("roadmap_templates.id", ondelete="SET NULL"), nullable=True)
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    owner_id = Column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    template_id = Column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("roadmap_templates.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    created_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
     # Relationships
@@ -28,14 +45,14 @@ class Roadmap(Base):
         back_populates="roadmap",
         cascade="all, delete-orphan",
         order_by="RoadmapStep.position",
-        lazy="selectin"
+        lazy="selectin",
     )
 
     progress_entries = relationship(
         "UserProgress",
         back_populates="roadmap",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
 
     def __repr__(self):

@@ -26,11 +26,15 @@ router = APIRouter(prefix="/roadmap-steps", tags=["Roadmap Steps"])
 # --- Helpers ---
 def _ensure_owner(db: Session, roadmap: Roadmap, user: User):
     if roadmap.owner_id != user.id:
-        raise HTTPException(status_code=403, detail="Only roadmap owner may modify steps")
+        raise HTTPException(
+            status_code=403, detail="Only roadmap owner may modify steps"
+        )
 
 
 # --- Create step ---
-@router.post("/", response_model=RoadmapStepResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=RoadmapStepResponse, status_code=status.HTTP_201_CREATED
+)
 def create_step(
     step_in: RoadmapStepCreate,
     db: Session = Depends(get_db),
@@ -90,7 +94,9 @@ def list_steps_for_roadmap(
         raise HTTPException(status_code=404, detail="Roadmap not found")
 
     if not roadmap.is_public and roadmap.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to view this roadmap")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to view this roadmap"
+        )
 
     steps = (
         db.query(RoadmapStep)
@@ -105,7 +111,11 @@ def list_steps_for_roadmap(
 
 # --- Get single step ---
 @router.get("/{step_id}", response_model=RoadmapStepResponse)
-def get_step(step_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_step(
+    step_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     step = db.query(RoadmapStep).filter(RoadmapStep.id == step_id).first()
     if not step:
         raise HTTPException(status_code=404, detail="Step not found")
@@ -156,7 +166,11 @@ def update_step(
 
 # --- Delete step ---
 @router.delete("/{step_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_step(step_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_step(
+    step_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     step = db.query(RoadmapStep).filter(RoadmapStep.id == step_id).first()
     if not step:
         raise HTTPException(status_code=404, detail="Step not found")

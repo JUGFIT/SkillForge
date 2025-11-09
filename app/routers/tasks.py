@@ -6,7 +6,11 @@ from uuid import UUID
 from app import models, schemas
 from app.core.database import get_db
 from app.utils.auth import get_current_user
-from app.utils.crud_helpers import detect_possible_duplicates, generate_task_key, clear_user_cache
+from app.utils.crud_helpers import (
+    detect_possible_duplicates,
+    generate_task_key,
+    clear_user_cache,
+)
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -14,7 +18,9 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 # -----------------------------------------------------------
 # 🧩 CREATE TASK
 # -----------------------------------------------------------
-@router.post("/", response_model=schemas.TaskResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=schemas.TaskResponse, status_code=status.HTTP_201_CREATED
+)
 def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(get_db),
@@ -22,7 +28,10 @@ def create_task(
 ):
     project = (
         db.query(models.Project)
-        .filter(models.Project.id == task.project_id, models.Project.owner_id == current_user.id)
+        .filter(
+            models.Project.id == task.project_id,
+            models.Project.owner_id == current_user.id,
+        )
         .first()
     )
     if not project:
@@ -31,10 +40,7 @@ def create_task(
     # Detect duplicates
     duplicates = detect_possible_duplicates(db, task.project_id, task.title)
 
-    new_task = models.Task(
-        **task.dict(),
-        task_key=generate_task_key(db, project)
-    )
+    new_task = models.Task(**task.dict(), task_key=generate_task_key(db, project))
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
@@ -52,7 +58,7 @@ def create_task(
         "assignee_id": new_task.assignee_id,
         "created_at": new_task.created_at,
         "updated_at": new_task.updated_at,
-        "possible_duplicates": duplicates
+        "possible_duplicates": duplicates,
     }
 
 
@@ -68,7 +74,9 @@ def list_tasks(
 ):
     project = (
         db.query(models.Project)
-        .filter(models.Project.id == project_id, models.Project.owner_id == current_user.id)
+        .filter(
+            models.Project.id == project_id, models.Project.owner_id == current_user.id
+        )
         .first()
     )
     if not project:

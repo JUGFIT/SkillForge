@@ -17,14 +17,14 @@ router = APIRouter(prefix="/roadmaps", tags=["Roadmaps"])
 def create_roadmap(
     roadmap: RoadmapCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Create a new roadmap for the current user."""
     new_roadmap = Roadmap(
         title=roadmap.title.strip(),
         description=roadmap.description,
         is_public=roadmap.is_public,
-        owner_id=current_user.id
+        owner_id=current_user.id,
     )
     db.add(new_roadmap)
     db.commit()
@@ -37,7 +37,7 @@ def list_roadmaps(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
 ):
     """✅ List all roadmaps (owned or public)."""
     roadmaps = (
@@ -54,7 +54,7 @@ def list_roadmaps(
 def get_roadmap(
     roadmap_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Retrieve a specific roadmap by ID."""
     roadmap = db.query(Roadmap).filter(Roadmap.id == roadmap_id).first()
@@ -70,14 +70,16 @@ def update_roadmap(
     roadmap_id: UUID,
     roadmap_update: RoadmapUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Update a roadmap (only by owner)."""
     roadmap = db.query(Roadmap).filter(Roadmap.id == roadmap_id).first()
     if not roadmap:
         raise HTTPException(status_code=404, detail="Roadmap not found")
     if roadmap.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Only the owner can update this roadmap")
+        raise HTTPException(
+            status_code=403, detail="Only the owner can update this roadmap"
+        )
 
     for field, value in roadmap_update.dict(exclude_unset=True).items():
         setattr(roadmap, field, value)
@@ -91,14 +93,16 @@ def update_roadmap(
 def delete_roadmap(
     roadmap_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """✅ Delete a roadmap (only by owner)."""
     roadmap = db.query(Roadmap).filter(Roadmap.id == roadmap_id).first()
     if not roadmap:
         raise HTTPException(status_code=404, detail="Roadmap not found")
     if roadmap.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Only the owner can delete this roadmap")
+        raise HTTPException(
+            status_code=403, detail="Only the owner can delete this roadmap"
+        )
 
     db.delete(roadmap)
     db.commit()

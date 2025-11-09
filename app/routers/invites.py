@@ -36,7 +36,10 @@ def generate_invite(
         raise HTTPException(status_code=404, detail="Project not found")
 
     if project.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You are not authorized to generate invites for this project")
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to generate invites for this project",
+        )
 
     token = secrets.token_urlsafe(24)
     token_hash = hash_password(token)
@@ -57,11 +60,19 @@ def generate_invite(
     db.refresh(invite)
 
     # Activity + Notification
-    log_activity(db, project.id, current_user.id, "invite_generated",
-                 f"Generated invite for project '{project.name}' (role={invite.role})")
-    create_notification(db, current_user.id,
-                        title="Invite Created",
-                        message=f"You generated an invite for project '{project.name}'")
+    log_activity(
+        db,
+        project.id,
+        current_user.id,
+        "invite_generated",
+        f"Generated invite for project '{project.name}' (role={invite.role})",
+    )
+    create_notification(
+        db,
+        current_user.id,
+        title="Invite Created",
+        message=f"You generated an invite for project '{project.name}'",
+    )
 
     return {
         "invite_token": token,
@@ -77,18 +88,27 @@ def accept_invite(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    pending_invites = db.query(models.ProjectMember).filter(models.ProjectMember.status == "pending").all()
+    pending_invites = (
+        db.query(models.ProjectMember)
+        .filter(models.ProjectMember.status == "pending")
+        .all()
+    )
 
     matched = None
     for invite in pending_invites:
-        if invite.invite_token_hash and verify_password(token, invite.invite_token_hash):
+        if invite.invite_token_hash and verify_password(
+            token, invite.invite_token_hash
+        ):
             matched = invite
             break
 
     if not matched:
         raise HTTPException(status_code=400, detail="Invalid invite token")
 
-    if matched.invite_token_expires_at and matched.invite_token_expires_at < datetime.utcnow():
+    if (
+        matched.invite_token_expires_at
+        and matched.invite_token_expires_at < datetime.utcnow()
+    ):
         raise HTTPException(status_code=400, detail="Invite token has expired")
 
     matched.user_id = current_user.id
@@ -101,13 +121,24 @@ def accept_invite(
     db.refresh(matched)
 
     # Activity + Notification
-    log_activity(db, matched.project_id, current_user.id, "invite_accepted",
-                 f"{current_user.username} accepted invite for project '{matched.project.name}'")
-    create_notification(db, matched.invited_by,
-                        title="Invite Accepted",
-                        message=f"{current_user.username} accepted your invite for project '{matched.project.name}'")
-    create_notification(db, current_user.id,
-                        title="Joined Project",
-                        message=f"You successfully joined project '{matched.project.name}'")
+    log_activity(
+        db,
+        matched.project_id,
+        current_user.id,
+        "invite_accepted",
+        f"{current_user.username} accepted invite for project '{matched.project.name}'",
+    )
+    create_notification(
+        db,
+        matched.invited_by,
+        title="Invite Accepted",
+        message=f"{current_user.username} accepted your invite for project '{matched.project.name}'",
+    )
+    create_notification(
+        db,
+        current_user.id,
+        title="Joined Project",
+        message=f"You successfully joined project '{matched.project.name}'",
+    )
 
     return matched

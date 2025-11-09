@@ -16,11 +16,15 @@ class User(Base):
     full_name = Column(String(100), nullable=True)
     bio = Column(String(255), nullable=True)
     profile_image = Column(String, nullable=True)
-    role = Column(String(20), default="user")  # global role: user / staff / sysadmin (optional)
+    role = Column(
+        String(20), default="user"
+    )  # global role: user / staff / sysadmin (optional)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
 
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
     last_login = Column(TIMESTAMP(timezone=True), nullable=True)
 
@@ -30,7 +34,7 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="selectin",
-        foreign_keys="ProjectMember.user_id",  
+        foreign_keys="ProjectMember.user_id",
     )
 
     # refresh_tokens model assumed present (table created by alembic)

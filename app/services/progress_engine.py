@@ -5,25 +5,32 @@ from app.models import UserProgress, StudySession
 XP_PER_MINUTE = 2
 STREAK_INTERVAL_HOURS = 36  # 1.5 days
 
+
 def calculate_xp(duration_minutes: int, understanding_score: float):
     """XP = time * score weight."""
     base_xp = duration_minutes * XP_PER_MINUTE
     multiplier = 1 + (understanding_score / 2)
     return round(base_xp * multiplier, 2)
 
-def update_user_progress(db: Session, user_id: str, concept_id: str,
-                         duration_minutes: int, understanding_score: float):
+
+def update_user_progress(
+    db: Session,
+    user_id: str,
+    concept_id: str,
+    duration_minutes: int,
+    understanding_score: float,
+):
     """Update progress and calculate XP/streak."""
     progress = (
         db.query(UserProgress)
-        .filter(UserProgress.user_id == user_id,
-                UserProgress.concept_id == concept_id)
+        .filter(UserProgress.user_id == user_id, UserProgress.concept_id == concept_id)
         .first()
     )
 
     if not progress:
-        progress = UserProgress(user_id=user_id, concept_id=concept_id,
-                                progress=0.0, completed=False)
+        progress = UserProgress(
+            user_id=user_id, concept_id=concept_id, progress=0.0, completed=False
+        )
         db.add(progress)
 
     # Increase progress
@@ -63,5 +70,5 @@ def update_user_progress(db: Session, user_id: str, concept_id: str,
         "progress": round(progress.progress, 2),
         "completed": progress.completed,
         "xp_gained": xp_gained,
-        "streak": streak
+        "streak": streak,
     }

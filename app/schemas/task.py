@@ -3,12 +3,14 @@ from uuid import UUID
 from typing import Optional
 from datetime import datetime
 
+
 class TaskCreate(BaseModel):
     project_id: UUID
     title: str
     description: Optional[str] = None
     priority: Optional[int] = 1
     due_date: Optional[datetime] = None
+
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
@@ -17,6 +19,7 @@ class TaskUpdate(BaseModel):
     priority: Optional[int] = None
     due_date: Optional[datetime] = None
     completed_at: Optional[datetime] = None
+
 
 class TaskResponse(BaseModel):
     id: UUID

@@ -8,6 +8,7 @@ import google.generativeai as genai
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
+
 def ai_suggest_next_concept(user_id: str, recent_sessions: list):
     """Use Gemini 2.5 Flash to suggest what the learner should study next."""
     prompt = f"""
@@ -21,11 +22,18 @@ def ai_suggest_next_concept(user_id: str, recent_sessions: list):
     return res.text.strip()
 
 
-def run_learning_loop(db: Session, user_id: str, concept_id: str,
-                      duration_minutes: int, understanding_score: float):
+def run_learning_loop(
+    db: Session,
+    user_id: str,
+    concept_id: str,
+    duration_minutes: int,
+    understanding_score: float,
+):
     """Main orchestrator: updates progress, reflection, and next-step suggestion."""
     # 1️⃣  Update progress + XP
-    result = update_user_progress(db, user_id, concept_id, duration_minutes, understanding_score)
+    result = update_user_progress(
+        db, user_id, concept_id, duration_minutes, understanding_score
+    )
 
     # 2️⃣  Collect recent sessions
     recent_sessions = (
@@ -36,7 +44,11 @@ def run_learning_loop(db: Session, user_id: str, concept_id: str,
         .all()
     )
     session_data = [
-        {"concept_id": str(s.concept_id), "score": s.understanding_score, "notes": s.reflection_notes}
+        {
+            "concept_id": str(s.concept_id),
+            "score": s.understanding_score,
+            "notes": s.reflection_notes,
+        }
         for s in recent_sessions
     ]
 
@@ -55,5 +67,5 @@ def run_learning_loop(db: Session, user_id: str, concept_id: str,
         "xp_gained": result["xp_gained"],
         "streak": result["streak"],
         "reflection": reflection,
-        "next_suggestion": next_concept
+        "next_suggestion": next_concept,
     }

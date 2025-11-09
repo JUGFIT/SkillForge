@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, JSON, Boolean, TIMESTAMP, func, ForeignKe
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 
+
 class RoadmapTemplate(Base):
     __tablename__ = "roadmap_templates"
 

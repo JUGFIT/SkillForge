@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
+
 class NotificationBase(BaseModel):
     id: UUID
     user_id: UUID

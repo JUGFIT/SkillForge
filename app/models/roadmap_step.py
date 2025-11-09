@@ -3,7 +3,16 @@ import uuid
 import logging
 import threading
 from sqlalchemy import (
-    Column, Text, Integer, Boolean, ForeignKey, TIMESTAMP, func, String, Float, event
+    Column,
+    Text,
+    Integer,
+    Boolean,
+    ForeignKey,
+    TIMESTAMP,
+    func,
+    String,
+    Float,
+    event,
 )
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship, Session
@@ -17,8 +26,16 @@ class RoadmapStep(Base):
     __tablename__ = "roadmap_steps"
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    roadmap_id = Column(PG_UUID(as_uuid=True), ForeignKey("roadmaps.id", ondelete="CASCADE"), nullable=False)
-    concept_id = Column(PG_UUID(as_uuid=True), ForeignKey("concepts.id", ondelete="SET NULL"), nullable=True)
+    roadmap_id = Column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("roadmaps.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    concept_id = Column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("concepts.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     title = Column(String(200), nullable=False, default="Untitled Step")
     description = Column(Text, nullable=True)
@@ -29,7 +46,9 @@ class RoadmapStep(Base):
     note = Column(Text, nullable=True)
     completed = Column(Boolean, default=False)
 
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
     # Relationships
@@ -57,7 +76,9 @@ def _normalize_background(roadmap_id: str):
             session.close()
         logger.info(f"✅ Background normalized roadmap {roadmap_id}")
     except Exception as e:
-        logger.warning(f"⚠️ Background normalization failed for roadmap {roadmap_id}: {e}")
+        logger.warning(
+            f"⚠️ Background normalization failed for roadmap {roadmap_id}: {e}"
+        )
 
 
 def schedule_background_normalization(roadmap_id: str):
@@ -68,14 +89,23 @@ def schedule_background_normalization(roadmap_id: str):
     if settings.USE_CELERY:
         try:
             from app.tasks.background_tasks import normalize_roadmap_steps_task
+
             normalize_roadmap_steps_task.delay(str(roadmap_id))
             logger.info(f"📦 Celery normalization task queued for roadmap {roadmap_id}")
         except Exception as e:
-            logger.error(f"❌ Celery task queue failed for {roadmap_id}, falling back to thread: {e}")
-            threading.Thread(target=_normalize_background, args=(roadmap_id,), daemon=True).start()
+            logger.error(
+                f"❌ Celery task queue failed for {roadmap_id}, falling back to thread: {e}"
+            )
+            threading.Thread(
+                target=_normalize_background, args=(roadmap_id,), daemon=True
+            ).start()
     else:
-        threading.Thread(target=_normalize_background, args=(roadmap_id,), daemon=True).start()
-        logger.debug(f"🧵 Thread-based normalization scheduled for roadmap {roadmap_id}")
+        threading.Thread(
+            target=_normalize_background, args=(roadmap_id,), daemon=True
+        ).start()
+        logger.debug(
+            f"🧵 Thread-based normalization scheduled for roadmap {roadmap_id}"
+        )
 
 
 # ---------------------------------------------------------
