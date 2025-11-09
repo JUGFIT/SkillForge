@@ -1,7 +1,9 @@
 # app/core/startup.py
 import logging
-from sqlalchemy.exc import SQLAlchemyError
+
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.core.database import SessionLocal
 
 logger = logging.getLogger("skillstack.startup")

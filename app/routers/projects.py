@@ -1,16 +1,17 @@
 # app/routers/projects.py
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.models import Project, ProjectMember, ActivityLog
-from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
-from app.utils.auth import get_current_user
+from app.models import ActivityLog, Project, ProjectMember
+from app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.services.notifications import create_notification
-from pydantic import BaseModel, Field
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 

@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+
+import google.generativeai as genai
 from sqlalchemy.orm import Session
+
+from app.core.config import settings
 from app.models.notification import Notification
 from app.models.study_session import StudySession
-from app.core.config import settings
-import google.generativeai as genai
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 

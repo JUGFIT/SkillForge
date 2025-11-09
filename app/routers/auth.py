@@ -1,24 +1,19 @@
 # app/routers/auth.py
-from datetime import timedelta, datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
-import requests
+from datetime import datetime, timedelta, timezone
 
+import requests
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
 from app.core.database import get_db
 from app.models.users import User
-from app.schemas.auth import (
-    RegisterRequest,
-    LoginRequest,
-    RegisterResponse,
-    TokenPair,
-    RefreshRequest,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
-    UserProfile,
-)
+from app.schemas.auth import (ForgotPasswordRequest, LoginRequest,
+                              RefreshRequest, RegisterRequest,
+                              RegisterResponse, ResetPasswordRequest,
+                              TokenPair, UserProfile)
 from app.utils import auth as auth_utils
-from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

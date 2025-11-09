@@ -1,7 +1,9 @@
 # app/core/task_executor.py
-import threading
 import logging
+import threading
+
 from fastapi import BackgroundTasks
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)

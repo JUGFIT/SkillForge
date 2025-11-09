@@ -1,12 +1,14 @@
 # app/core/rate_limiter.py
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-from fastapi import FastAPI, Request
-from slowapi.middleware import SlowAPIMiddleware
-from app.core.config import settings
-from redis import Redis
 import logging
+
+from fastapi import FastAPI, Request
+from redis import Redis
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
+
+from app.core.config import settings
 
 # ------------------------------------------------------------------
 # ✅ Setup Redis safely (for rate limiter storage)

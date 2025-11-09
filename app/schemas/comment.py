@@ -1,9 +1,9 @@
 # app/schemas/comment.py
 from datetime import datetime
-from pydantic import BaseModel, constr
 from typing import Optional
 from uuid import UUID
 
+from pydantic import BaseModel, constr
 
 # ============================================================
 # 💬 COMMENT SCHEMAS

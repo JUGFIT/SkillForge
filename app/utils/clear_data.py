@@ -18,24 +18,12 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from sqlalchemy import text
-from app.core.database import engine, Base
-from app.models import (
-    User,
-    Project,
-    ProjectMember,
-    Notification,
-    Task,
-    Comment,
-    RefreshToken,
-    Roadmap,
-    RoadmapStep,
-    StudySession,
-    UserProgress,
-    LearningConcept,
-    Concept,
-    AIRecommendation,
-    ActivityLog,
-)
+
+from app.core.database import Base, engine
+from app.models import (ActivityLog, AIRecommendation, Comment, Concept,
+                        LearningConcept, Notification, Project, ProjectMember,
+                        RefreshToken, Roadmap, RoadmapStep, StudySession, Task,
+                        User, UserProgress)
 
 
 def clear_all_tables():

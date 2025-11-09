@@ -1,32 +1,17 @@
 # app/main.py
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.core.startup import on_startup
 from app.core.rate_limiter import init_rate_limiter  # ✅ import limiter early
-
+from app.core.startup import on_startup
 # Routers
-from app.routers import (
-    auth,
-    projects,
-    tasks,
-    comments,
-    notifications,
-    ai,
-    learning_routes,
-    analytics,
-    exports,
-    members,
-    invites,
-    ai_routes,
-    progress_routes,
-    health,
-    roadmaps,
-    roadmap_steps,
-    concepts,
-)
+from app.routers import (ai, ai_routes, analytics, auth, comments, concepts,
+                         exports, health, invites, learning_routes, members,
+                         notifications, progress_routes, projects,
+                         roadmap_steps, roadmaps, tasks)
 
 # -----------------------------------------------------------
 # ⚙️ Initialize FastAPI first

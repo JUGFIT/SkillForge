@@ -1,6 +1,8 @@
-from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
-from app.models import UserProgress, StudySession
+
+from sqlalchemy.orm import Session
+
+from app.models import StudySession, UserProgress
 
 XP_PER_MINUTE = 2
 STREAK_INTERVAL_HOURS = 36  # 1.5 days

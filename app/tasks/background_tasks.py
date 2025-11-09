@@ -1,8 +1,8 @@
 # app/tasks/background_tasks.py
 from app.core.celery_app import celery_app
+from app.core.database import SessionLocal
 from app.core.logging_config import get_logger
 from app.utils.roadmap_utils import normalize_positions
-from app.core.database import SessionLocal
 
 logger = get_logger("BackgroundTasks")
 

@@ -2,20 +2,10 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-# Import routers one by one *after* router creation to prevent circular imports
-from app.routers import (
-    analytics,
-    auth,
-    comments,
-    exports,
-    projects,
-    settings,
-    tasks,
-    health,
-)
-
 # Notifications imported last (to break circular dependency)
-from app.routers import notifications
+# Import routers one by one *after* router creation to prevent circular imports
+from app.routers import (analytics, auth, comments, exports, health,
+                         notifications, projects, settings, tasks)
 
 # Include all routers
 router.include_router(auth.router)

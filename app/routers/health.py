@@ -1,12 +1,13 @@
 # app/routers/health.py
-from fastapi import APIRouter
-from datetime import datetime
-from sqlalchemy.exc import SQLAlchemyError
 import time
+from datetime import datetime
 
-from app.core.database import SessionLocal
+from fastapi import APIRouter
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.core.cache import redis_health
 from app.core.config import settings
+from app.core.database import SessionLocal
 
 router = APIRouter(prefix="/health", tags=["System"])
 

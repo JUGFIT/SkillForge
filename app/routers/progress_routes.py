@@ -1,17 +1,16 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
+
 from app.core import database
-from app.utils.auth import get_current_user
-from app.models.user_progress import UserProgress
 from app.models.activity_log import ActivityLog
-from app.schemas.progress import (
-    UserProgressCreate,
-    UserProgressUpdate,
-    UserProgressResponse,
-)
-from app.services.progress_engine import update_user_progress
+from app.models.user_progress import UserProgress
+from app.schemas.progress import (UserProgressCreate, UserProgressResponse,
+                                  UserProgressUpdate)
 from app.services.notifications import create_notification
+from app.services.progress_engine import update_user_progress
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/progress", tags=["Progress Tracking"])
 

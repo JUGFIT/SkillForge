@@ -1,13 +1,15 @@
 # pyright: reportMissingImports=false
 from datetime import datetime, timedelta
-from jose import JWTError, jwt  # type: ignore[import-not-found]
-from passlib.context import CryptContext  # type: ignore[import-not-found]
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt  # type: ignore[import-not-found]
+from passlib.context import CryptContext  # type: ignore[import-not-found]
 from sqlalchemy.orm import Session
+
+from app import models
 from app.core.config import settings
 from app.core.database import get_db
-from app import models
 
 # ============================================================
 # 🧩 PASSWORD HASHING — ARGON2id (OWASP Recommended)

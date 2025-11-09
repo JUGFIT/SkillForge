@@ -1,8 +1,9 @@
 # app/tasks/normalize_tasks.py
 import logging
+
+from app.core.cache import redis_lock
 from app.core.database import SessionLocal
 from app.utils.roadmap_utils import normalize_positions
-from app.core.cache import redis_lock
 
 logger = logging.getLogger(__name__)
 

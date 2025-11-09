@@ -1,9 +1,11 @@
 # app/models/comment.py
 
 import uuid
-from sqlalchemy import Column, String, TIMESTAMP, ForeignKey, func
+
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 

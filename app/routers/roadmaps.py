@@ -1,14 +1,15 @@
+from typing import List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
-from typing import List
 
 from app.core.database import get_db
 from app.models.roadmap import Roadmap
 from app.models.roadmap_step import RoadmapStep
-from app.schemas.roadmap import RoadmapCreate, RoadmapUpdate, RoadmapResponse
-from app.utils.auth import get_current_user
 from app.models.users import User
+from app.schemas.roadmap import RoadmapCreate, RoadmapResponse, RoadmapUpdate
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/roadmaps", tags=["Roadmaps"])
 

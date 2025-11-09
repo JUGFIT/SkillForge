@@ -1,8 +1,9 @@
 # app/core/config.py :
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 from urllib.parse import quote_plus
+
+from dotenv import load_dotenv
 
 # -------------------------------------------------------------------
 # 🌍 Load Environment Variables
@@ -92,8 +93,8 @@ class Settings:
         Lightweight test to verify connectivity for Postgres and Redis.
         Useful for CI/CD health checks or startup diagnostics.
         """
-        from sqlalchemy import create_engine
         import redis
+        from sqlalchemy import create_engine
 
         results = {}
         # Test Postgres

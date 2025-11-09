@@ -1,7 +1,8 @@
 # app/schemas/auth.py
-from pydantic import BaseModel, EmailStr, Field
-from uuid import UUID
 from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):

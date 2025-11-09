@@ -1,14 +1,15 @@
 # app/routers/members.py
+from datetime import datetime
+from typing import List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
-from typing import List
-from datetime import datetime
 
 from app import models, schemas
 from app.core.database import get_db
-from app.utils.auth import get_current_user
 from app.services.notifications import create_notification
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/members", tags=["Project Members"])
 

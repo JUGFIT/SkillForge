@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app.core import database
-from app.utils.auth import get_current_user
 from app.services.learning_loop import run_learning_loop
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/learning", tags=["Learning Intelligence"])
 

@@ -1,23 +1,15 @@
 # app/models/roadmap_step.py
-import uuid
 import logging
 import threading
-from sqlalchemy import (
-    Column,
-    Text,
-    Integer,
-    Boolean,
-    ForeignKey,
-    TIMESTAMP,
-    func,
-    String,
-    Float,
-    event,
-)
+import uuid
+
+from sqlalchemy import (TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer,
+                        String, Text, event, func)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import relationship, Session
-from app.core.database import Base
+from sqlalchemy.orm import Session, relationship
+
 from app.core.config import settings
+from app.core.database import Base
 
 logger = logging.getLogger(__name__)
 

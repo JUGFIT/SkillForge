@@ -1,7 +1,8 @@
 # app/schemas/member.py
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 

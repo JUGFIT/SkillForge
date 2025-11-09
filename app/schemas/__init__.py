@@ -1,15 +1,11 @@
 # app/schemas/__init__.py
-from app.schemas.user import UserBase, UserCreate, UserLogin, UserResponse
-from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
-from app.schemas.comment import CommentCreate, CommentResponse
 from app.schemas.analytics import TaskAnalyticsResponse
-from app.schemas.project import (
-    ProjectMemberCreate,
-    ProjectMemberUpdate,
-    ProjectMemberResponse,
-    InviteCreate,
-    InviteResponse,
-)
+from app.schemas.comment import CommentCreate, CommentResponse
+from app.schemas.project import (InviteCreate, InviteResponse,
+                                 ProjectMemberCreate, ProjectMemberResponse,
+                                 ProjectMemberUpdate)
+from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
+from app.schemas.user import UserBase, UserCreate, UserLogin, UserResponse
 
 __all__ = [
     "ProjectBase",

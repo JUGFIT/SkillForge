@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app.core import database
 from app.services.ai_recommendation import suggest_next_concept
 from app.utils.auth import get_current_user

@@ -1,6 +1,8 @@
 # app/core/celery_app.py
 import platform
+
 from celery import Celery
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 

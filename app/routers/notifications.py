@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app.core import database
-from app.utils.auth import get_current_user
 from app.services.notifications import send_study_summary
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 

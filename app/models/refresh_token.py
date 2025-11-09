@@ -1,8 +1,10 @@
 # app/models/refresh_token.py
 import uuid
-from sqlalchemy import Column, String, Boolean, TIMESTAMP, ForeignKey, func
+
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 

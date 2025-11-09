@@ -1,8 +1,10 @@
 # app/models/users.py
 import uuid
-from sqlalchemy import Column, String, Boolean, TIMESTAMP, func
+
+from sqlalchemy import TIMESTAMP, Boolean, Column, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 

@@ -1,6 +1,9 @@
 import uuid
-from sqlalchemy import Column, String, JSON, Boolean, TIMESTAMP, func, ForeignKey
+
+from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, String,
+                        func)
 from sqlalchemy.dialects.postgresql import UUID
+
 from app.core.database import Base
 
 

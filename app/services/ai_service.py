@@ -1,6 +1,8 @@
-import requests
 import logging
 from typing import List
+
+import requests
+
 from app.core.config import settings
 
 logger = logging.getLogger("skillstack.ai")

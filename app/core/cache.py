@@ -1,9 +1,11 @@
 # app/core/cache.py
 import json
 import time
-import redis
-from redis import Redis, ConnectionError, TimeoutError
 from contextlib import contextmanager
+
+import redis
+from redis import ConnectionError, Redis, TimeoutError
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 

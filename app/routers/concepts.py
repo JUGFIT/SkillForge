@@ -1,13 +1,14 @@
+from typing import List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from uuid import UUID
-from typing import List
 
 from app.core.database import get_db
 from app.models.concept import Concept
-from app.schemas.concept import ConceptCreate, ConceptUpdate, ConceptResponse
-from app.utils.auth import get_current_user
 from app.models.users import User
+from app.schemas.concept import ConceptCreate, ConceptResponse, ConceptUpdate
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/concepts", tags=["Concepts"])
 

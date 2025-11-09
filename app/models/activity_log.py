@@ -1,16 +1,10 @@
 # app/models/activity_log.py
 import uuid
-from sqlalchemy import (
-    Column,
-    String,
-    Text,
-    ForeignKey,
-    TIMESTAMP,
-    func,
-    JSON,
-)
+
+from sqlalchemy import JSON, TIMESTAMP, Column, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 
 

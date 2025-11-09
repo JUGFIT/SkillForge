@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
-from app.services.progress_engine import update_user_progress
-from app.services.notifications import create_notification, generate_ai_reflection
-from app.models import StudySession
-from app.core.config import settings
+
 import google.generativeai as genai
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.models import StudySession
+from app.services.notifications import (create_notification,
+                                        generate_ai_reflection)
+from app.services.progress_engine import update_user_progress
 
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
