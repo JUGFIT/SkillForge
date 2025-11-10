@@ -1,2 +1,19 @@
-* text=auto eol=lf
+# Enforce LF for all text files
+* text eol=lf
+
+# Python, config, docs
 *.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.env text eol=lf
+
+# Binary files (no conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.exe binary
+*.db binary
