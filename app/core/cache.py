@@ -3,7 +3,6 @@ import json
 import time
 from contextlib import contextmanager
 
-import redis
 from redis import ConnectionError, Redis, TimeoutError
 
 from app.core.config import settings

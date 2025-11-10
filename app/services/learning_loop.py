@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 import google.generativeai as genai
 from sqlalchemy.orm import Session
 

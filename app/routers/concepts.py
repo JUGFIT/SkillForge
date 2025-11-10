@@ -37,7 +37,9 @@ def list_concepts(
     """✅ List all active concepts."""
     concepts = (
         db.query(Concept)
-        .filter(Concept.is_active == True)
+        .filter(
+            Concept.is_active.is_(True)
+        )  # ✅ FIXED: Use .is_(True) instead of == True
         .offset(skip)
         .limit(limit)
         .all()

@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.roadmap import Roadmap
-from app.models.roadmap_step import RoadmapStep
 from app.models.users import User
 from app.schemas.roadmap import RoadmapCreate, RoadmapResponse, RoadmapUpdate
 from app.utils.auth import get_current_user
@@ -43,7 +42,9 @@ def list_roadmaps(
     """✅ List all roadmaps (owned or public)."""
     roadmaps = (
         db.query(Roadmap)
-        .filter((Roadmap.is_public == True) | (Roadmap.owner_id == current_user.id))
+        .filter(
+            (Roadmap.is_public.is_(True)) | (Roadmap.owner_id == current_user.id)
+        )  # ✅ FIXED: Use .is_(True) instead of == True
         .offset(skip)
         .limit(limit)
         .all()

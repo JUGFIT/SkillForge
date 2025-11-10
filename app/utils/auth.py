@@ -1,4 +1,3 @@
-# app/utils/auth.py
 from __future__ import annotations
 
 import secrets
@@ -13,7 +12,8 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.utils import email_utils  # assumed to expose send_email_background(...)
+from app.models.refresh_token import RefreshToken
+from app.utils import email_utils
 
 # -----------------------------------------------------------
 # 🧩 Password Hashing — Argon2id (secure + consistent)
@@ -85,15 +85,11 @@ def _generate_refresh_token() -> str:
     return secrets.token_urlsafe(64)
 
 
-def create_and_store_refresh_token(db: Session, user) -> "RefreshToken":
+def create_and_store_refresh_token(db: Session, user) -> RefreshToken:
     """
     Create and persist a refresh token tied to the given user.
     Ensures that only the UUID is stored, not the full User object.
     """
-    from app.models.refresh_token import (
-        RefreshToken,  # Lazy import to avoid circular refs
-    )
-
     raw_token = _generate_refresh_token()
     expires_at = _now() + timedelta(
         days=getattr(settings, "REFRESH_TOKEN_EXPIRE_DAYS", 30)
@@ -113,8 +109,6 @@ def create_and_store_refresh_token(db: Session, user) -> "RefreshToken":
 
 
 def revoke_refresh_token(db: Session, token_str: str):
-    from app.models.refresh_token import RefreshToken
-
     rt = db.query(RefreshToken).filter(RefreshToken.token == token_str).first()
     if rt:
         rt.revoked = True
@@ -124,9 +118,7 @@ def revoke_refresh_token(db: Session, token_str: str):
 
 def rotate_refresh_token(
     db: Session, old_token_str: str, user
-) -> Optional["RefreshToken"]:
-    from app.models.refresh_token import RefreshToken
-
+) -> Optional[RefreshToken]:
     old = db.query(RefreshToken).filter(RefreshToken.token == old_token_str).first()
     if old:
         old.revoked = True
@@ -137,11 +129,14 @@ def rotate_refresh_token(
 
 
 def get_refresh_token_record(db: Session, token_str: str):
-    from app.models.refresh_token import RefreshToken
-
     return (
         db.query(RefreshToken)
-        .filter(RefreshToken.token == token_str, RefreshToken.revoked == False)
+        .filter(
+            RefreshToken.token == token_str,
+            RefreshToken.revoked.is_(
+                False
+            ),  # ✅ FIXED: Use .is_(False) instead of == False
+        )
         .first()
     )
 

@@ -13,14 +13,17 @@ Usage:
 import sys
 from pathlib import Path
 
+from sqlalchemy import text
+
 # Add project root to Python path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from sqlalchemy import text
+from app.core.database import Base, engine  # noqa: E402
 
-from app.core.database import Base, engine
-from app.models import (
+# Import all models to ensure they're registered with Base.metadata
+# These imports are needed even though they appear unused
+from app.models import (  # noqa: E402, F401
     ActivityLog,
     AIRecommendation,
     Comment,
@@ -97,8 +100,8 @@ def clear_all_tables():
             result = conn.execute(
                 text(
                     """
-                SELECT sequence_name 
-                FROM information_schema.sequences 
+                SELECT sequence_name
+                FROM information_schema.sequences
                 WHERE sequence_schema = 'public'
             """
                 )

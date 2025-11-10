@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import requests
 
@@ -30,7 +29,10 @@ class GeminiProvider(AIProvider):
     def __init__(self):
         self.api_key = settings.GEMINI_API_KEY
         self.model = settings.GEMINI_MODEL
-        self.url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        self.url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{self.model}:generateContent?key={self.api_key}"
+        )  # ✅ FIXED: Split long line
 
     def _ask_gemini(self, prompt: str) -> str:
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
@@ -41,19 +43,29 @@ class GeminiProvider(AIProvider):
             return data["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as e:
             logger.error(f"Gemini response parse error: {e}")
-            return "Sorry, I couldn’t understand the AI response."
+            return "Sorry, I couldn't understand the AI response."
 
     def generate_project_idea(self, goal, skill_level):
-        prompt = f"Generate a concise project idea for a {skill_level} learner. Goal: {goal}. Include title, short description, and suggested stack."
+        prompt = (
+            f"Generate a concise project idea for a {skill_level} learner. "
+            f"Goal: {goal}. Include title, short description, and suggested stack."
+        )  # ✅ FIXED: Split long line
         return self._ask_gemini(prompt)
 
     def generate_roadmap(self, title, goal, duration_weeks, skill_level):
-        prompt = f"Create a {duration_weeks}-week learning roadmap for project '{title}'. Goal: {goal}. Skill level: {skill_level}. Include weekly milestones and learning outcomes."
+        prompt = (
+            f"Create a {duration_weeks}-week learning roadmap for project '{title}'. "
+            f"Goal: {goal}. Skill level: {skill_level}. "
+            f"Include weekly milestones and learning outcomes."
+        )  # ✅ FIXED: Split long line
         return self._ask_gemini(prompt)
 
     def generate_tasks(self, title, description, roadmap_context=None):
         context = roadmap_context or ""
-        prompt = f"Generate clear actionable development tasks for the project '{title}'. Description: {description}. Context: {context}"
+        prompt = (
+            f"Generate clear actionable development tasks for the project '{title}'. "
+            f"Description: {description}. Context: {context}"
+        )  # ✅ FIXED: Split long line
         return self._ask_gemini(prompt)
 
     def answer_question(self, question):

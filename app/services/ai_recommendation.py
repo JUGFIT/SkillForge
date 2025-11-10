@@ -4,7 +4,7 @@ import google.generativeai as genai
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.models import Concept, RoadmapStep, UserProgress
+from app.models import RoadmapStep, UserProgress
 
 # --- Configure Gemini ---
 genai.configure(api_key=settings.GEMINI_API_KEY)

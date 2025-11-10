@@ -3,11 +3,9 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app import models
-from app.schemas import TaskAnalyticsResponse
 from app.utils.cache import cache_set
 
 
