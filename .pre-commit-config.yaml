@@ -4,6 +4,6 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/isort
-    rev: 7.0.0
+    rev: 5.13.2
     hooks:
       - id: isort
