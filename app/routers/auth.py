@@ -9,10 +9,16 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.users import User
-from app.schemas.auth import (ForgotPasswordRequest, LoginRequest,
-                              RefreshRequest, RegisterRequest,
-                              RegisterResponse, ResetPasswordRequest,
-                              TokenPair, UserProfile)
+from app.schemas.auth import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    RegisterResponse,
+    ResetPasswordRequest,
+    TokenPair,
+    UserProfile,
+)
 from app.utils import auth as auth_utils
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])

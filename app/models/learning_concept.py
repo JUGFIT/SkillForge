@@ -1,7 +1,6 @@
 import uuid
 
-from sqlalchemy import (JSON, TIMESTAMP, Column, Float, ForeignKey, String,
-                        Text, func)
+from sqlalchemy import JSON, TIMESTAMP, Column, Float, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 

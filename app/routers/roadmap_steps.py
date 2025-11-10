@@ -7,13 +7,17 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+
 # ✅ Use the background task system instead of direct normalization
 from app.core.task_executor import enqueue
 from app.models.roadmap import Roadmap
 from app.models.roadmap_step import RoadmapStep
 from app.models.users import User
-from app.schemas.roadmap_step import (RoadmapStepCreate, RoadmapStepResponse,
-                                      RoadmapStepUpdate)
+from app.schemas.roadmap_step import (
+    RoadmapStepCreate,
+    RoadmapStepResponse,
+    RoadmapStepUpdate,
+)
 from app.tasks.normalize_tasks import normalize_roadmap_task
 from app.utils.auth import get_current_user
 

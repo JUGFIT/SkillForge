@@ -13,8 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.utils import \
-    email_utils  # assumed to expose send_email_background(...)
+from app.utils import email_utils  # assumed to expose send_email_background(...)
 
 # -----------------------------------------------------------
 # 🧩 Password Hashing — Argon2id (secure + consistent)
@@ -91,8 +90,9 @@ def create_and_store_refresh_token(db: Session, user) -> "RefreshToken":
     Create and persist a refresh token tied to the given user.
     Ensures that only the UUID is stored, not the full User object.
     """
-    from app.models.refresh_token import \
-        RefreshToken  # Lazy import to avoid circular refs
+    from app.models.refresh_token import (
+        RefreshToken,  # Lazy import to avoid circular refs
+    )
 
     raw_token = _generate_refresh_token()
     expires_at = _now() + timedelta(

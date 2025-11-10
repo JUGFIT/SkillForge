@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.core.database import get_db
 from app.utils.auth import get_current_user
-from app.utils.crud_helpers import (clear_user_cache,
-                                    detect_possible_duplicates,
-                                    generate_task_key)
+from app.utils.crud_helpers import (
+    clear_user_cache,
+    detect_possible_duplicates,
+    generate_task_key,
+)
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 

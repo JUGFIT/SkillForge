@@ -3,8 +3,18 @@ import logging
 import threading
 import uuid
 
-from sqlalchemy import (TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer,
-                        String, Text, event, func)
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    event,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Session, relationship
 

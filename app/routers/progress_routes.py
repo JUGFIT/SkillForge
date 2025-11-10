@@ -6,8 +6,11 @@ from sqlalchemy.orm import Session
 from app.core import database
 from app.models.activity_log import ActivityLog
 from app.models.user_progress import UserProgress
-from app.schemas.progress import (UserProgressCreate, UserProgressResponse,
-                                  UserProgressUpdate)
+from app.schemas.progress import (
+    UserProgressCreate,
+    UserProgressResponse,
+    UserProgressUpdate,
+)
 from app.services.notifications import create_notification
 from app.services.progress_engine import update_user_progress
 from app.utils.auth import get_current_user

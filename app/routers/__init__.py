@@ -4,8 +4,17 @@ router = APIRouter()
 
 # Notifications imported last (to break circular dependency)
 # Import routers one by one *after* router creation to prevent circular imports
-from app.routers import (analytics, auth, comments, exports, health,
-                         notifications, projects, settings, tasks)
+from app.routers import (
+    analytics,
+    auth,
+    comments,
+    exports,
+    health,
+    notifications,
+    projects,
+    settings,
+    tasks,
+)
 
 # Include all routers
 router.include_router(auth.router)

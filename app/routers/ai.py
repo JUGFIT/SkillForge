@@ -1,9 +1,15 @@
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.ai import (AIAnswerResponse, AIProjectIdeaRequest,
-                            AIProjectIdeaResponse, AIQuestionRequest,
-                            AIRoadmapRequest, AIRoadmapResponse,
-                            AITaskGenerationRequest, AITaskResponse)
+from app.schemas.ai import (
+    AIAnswerResponse,
+    AIProjectIdeaRequest,
+    AIProjectIdeaResponse,
+    AIQuestionRequest,
+    AIRoadmapRequest,
+    AIRoadmapResponse,
+    AITaskGenerationRequest,
+    AITaskResponse,
+)
 from app.services.ai_service import get_ai_provider
 
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])

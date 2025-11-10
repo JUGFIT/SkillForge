@@ -1,8 +1,7 @@
 # app/models/project.py
 import uuid
 
-from sqlalchemy import (TIMESTAMP, Boolean, Column, Enum, ForeignKey, String,
-                        Text, func)
+from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 

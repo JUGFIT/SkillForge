@@ -7,11 +7,27 @@ from app.core.config import settings
 from app.core.logging_config import setup_logging
 from app.core.rate_limiter import init_rate_limiter  # ✅ import limiter early
 from app.core.startup import on_startup
+
 # Routers
-from app.routers import (ai, ai_routes, analytics, auth, comments, concepts,
-                         exports, health, invites, learning_routes, members,
-                         notifications, progress_routes, projects,
-                         roadmap_steps, roadmaps, tasks)
+from app.routers import (
+    ai,
+    ai_routes,
+    analytics,
+    auth,
+    comments,
+    concepts,
+    exports,
+    health,
+    invites,
+    learning_routes,
+    members,
+    notifications,
+    progress_routes,
+    projects,
+    roadmap_steps,
+    roadmaps,
+    tasks,
+)
 
 # -----------------------------------------------------------
 # ⚙️ Initialize FastAPI first
