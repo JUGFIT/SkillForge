@@ -94,7 +94,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: worker
+      target: base  # CHANGED from 'worker' to 'base'
     depends_on:
       - redis
       - postgres
@@ -114,7 +114,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: flower
+      target: base  # CHANGED from 'flower' to 'base'
     depends_on:
       - redis
     env_file:
