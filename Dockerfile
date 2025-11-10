@@ -1,45 +1,29 @@
-# =====================================================================
-# Base stage - installs dependencies and builds Python environment
-# =====================================================================
+#Dockerfile
 FROM python:3.11-slim AS base
 
 WORKDIR /app
 
-# Environment setup
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/root/.local/bin:$PATH"
-
-# System dependencies for psycopg2, PDFs, images, etc.
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential gcc libpq-dev curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy requirements early for better caching
+# Copy requirements first for better caching
 COPY requirements.txt ./
+
+# Install Python dependencies
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy full project
+# Copy application code
 COPY . .
 
-# Copy entrypoint and make executable
+# Copy entrypoint script
 COPY docker/entrypoint.sh /app/docker/entrypoint.sh
-RUN chmod +x /app/docker/entrypoint.sh
 
-# Default command (overridden by docker-compose)
-CMD ["/app/docker/entrypoint.sh", "web"]
+# Make sure it's executable (even in cached layers)
+RUN chmod +x /app/docker/entrypoint.sh && \
+    ls -la /app/docker/entrypoint.sh
 
-# =====================================================================
-# Worker stage (Celery)
-# =====================================================================
-FROM base AS worker
-RUN pip install --no-cache-dir celery==5.4.0
-CMD ["/app/docker/entrypoint.sh", "worker"]
-
-# =====================================================================
-# Flower stage (Celery monitoring dashboard)
-# =====================================================================
-FROM base AS flower
-RUN pip install --no-cache-dir celery==5.4.0 flower==2.0.1
-CMD ["/app/docker/entrypoint.sh", "flower"]
+# Use bash to execute the entrypoint (more reliable in CI/CD)
+ENTRYPOINT ["/bin/bash", "/app/docker/entrypoint.sh"]
