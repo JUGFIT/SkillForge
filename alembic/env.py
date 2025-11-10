@@ -19,6 +19,7 @@ if BASE_DIR not in sys.path:
 
 from app import models
 from app.core.config import settings
+
 # --------------------------------------------------------------------
 # Import app Base + models
 # --------------------------------------------------------------------
