@@ -59,7 +59,7 @@ services:
         condition: service_healthy
     volumes:
       - ./:/app
-    command: ["/app/docker/entrypoint.sh", "migrate"]
+    command: ["migrate"]
     restart: "no"
     networks:
       - skillstack
