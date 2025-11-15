@@ -212,50 +212,39 @@ jobs:
 
       - name: 🔐 Create .env file for Docker Compose
         run: |
-          # Use URL-safe password for CI - matches what postgres container expects
-          CI_POSTGRES_PASSWORD="postgres_test_ci"
-          
-          cat > .env << EOF
-          # Database Configuration
+          cat > .env << 'ENVEOF'
           POSTGRES_USER=postgres
-          POSTGRES_PASSWORD=${CI_POSTGRES_PASSWORD}
+          POSTGRES_PASSWORD=postgres_test_ci
           POSTGRES_DB=skillstack_test
           POSTGRES_HOST=postgres
           POSTGRES_PORT=5432
-          DATABASE_URL=postgresql+psycopg2://postgres:${CI_POSTGRES_PASSWORD}@postgres:5432/skillstack_test
-          
-          # Security
-          SECRET_KEY=${{ secrets.SECRET_KEY || env.SECRET_KEY }}
-          JWT_SECRET_KEY=${JWT_SECRET_KEY}
-          JWT_ALGORITHM=${JWT_ALGORITHM}
-          ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-          REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS}
-          
-          # AI Configuration
-          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY || 'dummy-api-key' }}
-          GEMINI_MODEL=${GEMINI_MODEL}
-          AI_PROVIDER=${AI_PROVIDER}
-          AI_MAX_TOKENS=${AI_MAX_TOKENS}
-          AI_RATE_LIMIT_PER_MIN=${AI_RATE_LIMIT_PER_MIN}
-          
-          # OAuth
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID || 'dummy-client-id' }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET || 'dummy-client-secret' }}
-          
-          # Redis
+          DATABASE_URL=postgresql+psycopg2://postgres:postgres_test_ci@postgres:5432/skillstack_test
+          SECRET_KEY=test-secret-key-for-ci-only
+          JWT_SECRET_KEY=test-jwt-secret-for-ci-only
+          JWT_ALGORITHM=HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES=30
+          REFRESH_TOKEN_EXPIRE_DAYS=30
+          GEMINI_API_KEY=dummy-api-key
+          GEMINI_MODEL=gemini-2.5-flash
+          AI_PROVIDER=gemini
+          AI_MAX_TOKENS=1024
+          AI_RATE_LIMIT_PER_MIN=10
+          GOOGLE_CLIENT_ID=dummy-client-id
+          GOOGLE_CLIENT_SECRET=dummy-client-secret
           REDIS_URL=redis://redis:6379/0
-          
-          # App Settings
           APP_ENV=testing
           DEBUG=False
           USE_CELERY=false
-          EOF
+          ENVEOF
           
           echo "✅ .env file created for Docker"
-          
-          echo "📋 Verifying critical variables..."
-          echo "POSTGRES_PASSWORD: ${CI_POSTGRES_PASSWORD}"
-          echo "DATABASE_URL present: $(grep -q DATABASE_URL .env && echo 'yes' || echo 'no')"
+          echo ""
+          echo "📋 Verifying .env file contents..."
+          cat .env
+          echo ""
+          echo "📋 Checking critical variables..."
+          grep "POSTGRES_PASSWORD" .env
+          grep "DATABASE_URL" .env
 
       - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -281,27 +270,39 @@ jobs:
           timeout 30 bash -c 'until docker compose exec -T redis redis-cli ping | grep -q PONG; do sleep 2; done'
           echo "✅ Redis is ready"
           
-          echo "📋 Verifying PostgreSQL authentication..."
+          echo "📋 Verifying PostgreSQL authentication with test credentials..."
           docker compose exec -T postgres psql -U postgres -d skillstack_test -c "SELECT 1;" || {
             echo "❌ PostgreSQL authentication test failed!"
+            echo "=== POSTGRES LOGS ==="
             docker compose logs postgres
             exit 1
           }
+          echo "✅ PostgreSQL authentication successful"
           
+          echo ""
           echo "🔄 Running migrations..."
+          echo "=== Environment variables in migrate container ==="
+          docker compose run --rm --no-deps migrate env | grep -E "(POSTGRES|DATABASE)" || true
+          
           docker compose up --abort-on-container-exit migrate
           migration_exit_code=$?
           
           if [ $migration_exit_code -ne 0 ]; then
-            echo "❌ Migration failed! Dumping logs..."
+            echo ""
+            echo "❌ Migration failed! Dumping diagnostic information..."
+            echo ""
             echo "=== MIGRATE CONTAINER LOGS ==="
             docker compose logs migrate
+            echo ""
             echo "=== POSTGRES CONTAINER LOGS ==="
             docker compose logs postgres
+            echo ""
             echo "=== POSTGRES ENVIRONMENT ==="
-            docker compose exec -T postgres env | grep POSTGRES
-            echo "=== MIGRATE ENVIRONMENT ==="
-            docker compose run --rm --no-deps migrate env | grep -E "(POSTGRES|DATABASE)" || true
+            docker compose exec -T postgres env | grep POSTGRES || true
+            echo ""
+            echo "=== .ENV FILE CONTENTS ==="
+            cat .env | grep POSTGRES
+            echo ""
             exit 1
           fi
           
@@ -314,14 +315,17 @@ jobs:
           echo "📊 Container status:"
           docker compose ps
           
+          echo ""
           echo "🏥 Health check for web service..."
           timeout 30 bash -c 'until curl -f http://localhost:8000/health 2>/dev/null; do sleep 2; done' || {
-            echo "⚠️ Health check failed, but continuing..."
+            echo "⚠️ Health check failed or endpoint not available, showing logs..."
             docker compose logs web
           }
           
+          echo ""
           echo "✅ All services started successfully!"
           
+          echo ""
           echo "🧹 Cleaning up..."
           docker compose down -v
 
