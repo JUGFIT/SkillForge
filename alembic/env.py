@@ -78,6 +78,17 @@ def run_migrations_offline():
 
 def run_migrations_online():
     """Run migrations in 'online' mode."""
+    # 🔍 DEBUG: Log connection details (mask password for security)
+    print(f"🔗 Alembic connecting to PostgreSQL:")
+    print(f"   Host: {settings.POSTGRES_HOST}")
+    print(f"   Port: {settings.POSTGRES_PORT}")
+    print(f"   Database: {settings.POSTGRES_DB}")
+    print(f"   User: {settings.POSTGRES_USER}")
+    print(f"   Password: {'*' * len(settings.POSTGRES_PASSWORD)}")
+    print(
+        f"   DATABASE_URL: {settings.DATABASE_URL.replace(settings.POSTGRES_PASSWORD, '****')}"
+    )
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
