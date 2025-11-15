@@ -34,7 +34,11 @@ wait_for "redis:6379" 30
 # ----------------------------
 # Service startup
 # ----------------------------
-if [ "$CMD" = "web" ]; then
+if [ "$CMD" = "migrate" ]; then
+  echo "🔄 Running Alembic migrations..."
+  exec alembic upgrade head
+
+elif [ "$CMD" = "web" ]; then
   echo "🚀 Starting SkillStack API with Uvicorn..."
   exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
 
@@ -48,6 +52,6 @@ elif [ "$CMD" = "flower" ]; then
 
 else
   echo "❌ Unknown command: $CMD"
-  echo "Available commands: web, worker, flower"
+  echo "Available commands: migrate, web, worker, flower"
   exit 1
 fi
