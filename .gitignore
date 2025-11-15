@@ -1,42 +1,141 @@
 # ===============================
-# 🧠 SkillForge Project Gitignore
+# 🧠 SkillStack Project Gitignore
 # ===============================
 
-# Environment
+# Environment files (ignore all except example)
 .env
 .env.*
+.env.local
+.env.*.local
+!.env.example
 
 # Virtual environment
 .venv/
 venv/
+env/
+ENV/
 
 # Python cache / bytecode
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
 
 # Logs
 logs/
 *.log
+*.log.*
 
 # Build artifacts
 *.egg-info/
 dist/
 build/
+*.whl
 
 # OS & Editor junk
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
+.AppleDouble
+.LSOverride
 
 # IDE
 .vscode/
 .idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
 
 # Docker
 *.pid
 *.sock
+docker-compose.override.yml
 
 # Coverage / testing
 .coverage
+.coverage.*
 htmlcov/
 .pytest_cache/
+.tox/
+.hypothesis/
+*.cover
+.cache
+nosetests.xml
+coverage.xml
+*.coveragerc
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pyenv
+.python-version
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Static files (if you generate them)
+staticfiles/
+media/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+temp/
+tmp/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# Alembic (keep versions, ignore temp files)
+alembic/__pycache__/
+alembic/versions/__pycache__/
+
+# Exports (if users generate reports/exports)
+app/static/exports/*.pdf
+app/static/exports/*.csv
+app/static/exports/*.xlsx
+!app/static/exports/.gitkeep

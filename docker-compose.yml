@@ -57,8 +57,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: >
-      sh -c "alembic upgrade head && echo '✅ Alembic migrations complete.'"
+    volumes:
+      - ./:/app
+    command: ["/app/docker/entrypoint.sh", "migrate"]
     restart: "no"
     networks:
       - skillstack
@@ -94,7 +95,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base  # CHANGED from 'worker' to 'base'
+      target: base
     depends_on:
       - redis
       - postgres
@@ -114,7 +115,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base  # CHANGED from 'flower' to 'base'
+      target: base
     depends_on:
       - redis
     env_file:
