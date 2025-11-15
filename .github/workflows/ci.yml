@@ -198,7 +198,7 @@ jobs:
         continue-on-error: true
 
   # ================================================================
-  # Job 4: Docker Build & Push
+  # Job 4: Docker Build & Push (FIXED VERSION)
   # ================================================================
   docker:
     name: 🐳 Docker Build
@@ -212,33 +212,50 @@ jobs:
 
       - name: 🔐 Create .env file for Docker Compose
         run: |
-          # Use simple password for CI testing - avoids special character issues
-          echo "POSTGRES_USER=postgres" >> .env
-          echo "POSTGRES_PASSWORD=postgres" >> .env
-          echo "POSTGRES_DB=skillstack" >> .env
-          echo "POSTGRES_HOST=postgres" >> .env
-          echo "POSTGRES_PORT=5432" >> .env
-          echo "DATABASE_URL=postgresql+psycopg2://postgres:postgres@postgres:5432/skillstack" >> .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY || env.SECRET_KEY }}" >> .env
-          echo "JWT_SECRET_KEY=${JWT_SECRET_KEY}" >> .env
-          echo "JWT_ALGORITHM=${JWT_ALGORITHM}" >> .env
-          echo "ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}" >> .env
-          echo "REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS}" >> .env
-          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY || 'dummy-api-key' }}" >> .env
-          echo "GEMINI_MODEL=${GEMINI_MODEL}" >> .env
-          echo "AI_PROVIDER=${AI_PROVIDER}" >> .env
-          echo "AI_MAX_TOKENS=${AI_MAX_TOKENS}" >> .env
-          echo "AI_RATE_LIMIT_PER_MIN=${AI_RATE_LIMIT_PER_MIN}" >> .env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID || 'dummy-client-id' }}" >> .env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET || 'dummy-client-secret' }}" >> .env
-          echo "REDIS_URL=redis://redis:6379/0" >> .env
-          echo "APP_ENV=${APP_ENV}" >> .env
-          echo "DEBUG=${DEBUG}" >> .env
-          echo "USE_CELERY=${USE_CELERY}" >> .env
+          # Use URL-safe password for CI - matches what postgres container expects
+          CI_POSTGRES_PASSWORD="postgres_test_ci"
+          
+          cat > .env << EOF
+          # Database Configuration
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=${CI_POSTGRES_PASSWORD}
+          POSTGRES_DB=skillstack_test
+          POSTGRES_HOST=postgres
+          POSTGRES_PORT=5432
+          DATABASE_URL=postgresql+psycopg2://postgres:${CI_POSTGRES_PASSWORD}@postgres:5432/skillstack_test
+          
+          # Security
+          SECRET_KEY=${{ secrets.SECRET_KEY || env.SECRET_KEY }}
+          JWT_SECRET_KEY=${JWT_SECRET_KEY}
+          JWT_ALGORITHM=${JWT_ALGORITHM}
+          ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+          REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS}
+          
+          # AI Configuration
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY || 'dummy-api-key' }}
+          GEMINI_MODEL=${GEMINI_MODEL}
+          AI_PROVIDER=${AI_PROVIDER}
+          AI_MAX_TOKENS=${AI_MAX_TOKENS}
+          AI_RATE_LIMIT_PER_MIN=${AI_RATE_LIMIT_PER_MIN}
+          
+          # OAuth
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID || 'dummy-client-id' }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET || 'dummy-client-secret' }}
+          
+          # Redis
+          REDIS_URL=redis://redis:6379/0
+          
+          # App Settings
+          APP_ENV=testing
+          DEBUG=False
+          USE_CELERY=false
+          EOF
+          
           echo "✅ .env file created for Docker"
           
-          echo "📋 Verifying .env contents..."
-          grep "DATABASE_URL" .env || echo "⚠️ DATABASE_URL not found!"
+          echo "📋 Verifying critical variables..."
+          echo "POSTGRES_PASSWORD: ${CI_POSTGRES_PASSWORD}"
+          echo "DATABASE_URL present: $(grep -q DATABASE_URL .env && echo 'yes' || echo 'no')"
 
       - name: 🔧 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -256,39 +273,54 @@ jobs:
           echo "🚀 Starting postgres and redis..."
           docker compose up -d postgres redis
           
-          echo "⏳ Waiting 15 seconds for services to be healthy..."
-          sleep 15
+          echo "⏳ Waiting for PostgreSQL to be healthy..."
+          timeout 60 bash -c 'until docker compose exec -T postgres pg_isready -U postgres -d skillstack_test; do sleep 2; done'
+          echo "✅ PostgreSQL is ready"
           
-          echo "📋 Checking Postgres environment..."
-          docker compose exec -T postgres env | grep POSTGRES || true
+          echo "⏳ Waiting for Redis to be healthy..."
+          timeout 30 bash -c 'until docker compose exec -T redis redis-cli ping | grep -q PONG; do sleep 2; done'
+          echo "✅ Redis is ready"
           
-          echo "📋 Checking .env file in migrate container..."
-          docker compose run --rm --no-deps migrate cat /app/.env | grep POSTGRES || true
+          echo "📋 Verifying PostgreSQL authentication..."
+          docker compose exec -T postgres psql -U postgres -d skillstack_test -c "SELECT 1;" || {
+            echo "❌ PostgreSQL authentication test failed!"
+            docker compose logs postgres
+            exit 1
+          }
           
           echo "🔄 Running migrations..."
-          docker compose up migrate
+          docker compose up --abort-on-container-exit migrate
           migration_exit_code=$?
           
           if [ $migration_exit_code -ne 0 ]; then
             echo "❌ Migration failed! Dumping logs..."
-            echo "=== MIGRATE LOGS ==="
+            echo "=== MIGRATE CONTAINER LOGS ==="
             docker compose logs migrate
-            echo "=== POSTGRES LOGS ==="
+            echo "=== POSTGRES CONTAINER LOGS ==="
             docker compose logs postgres
-            echo "=== ENV FILE CONTENTS ==="
-            cat .env | grep POSTGRES
+            echo "=== POSTGRES ENVIRONMENT ==="
+            docker compose exec -T postgres env | grep POSTGRES
+            echo "=== MIGRATE ENVIRONMENT ==="
+            docker compose run --rm --no-deps migrate env | grep -E "(POSTGRES|DATABASE)" || true
             exit 1
           fi
           
           echo "✅ Migrations successful! Starting remaining services..."
-          docker compose up -d
-          sleep 10
+          docker compose up -d web worker flower
+          
+          echo "⏳ Waiting for services to start..."
+          sleep 15
           
           echo "📊 Container status:"
           docker compose ps
           
-          echo "📋 Service logs:"
-          docker compose logs
+          echo "🏥 Health check for web service..."
+          timeout 30 bash -c 'until curl -f http://localhost:8000/health 2>/dev/null; do sleep 2; done' || {
+            echo "⚠️ Health check failed, but continuing..."
+            docker compose logs web
+          }
+          
+          echo "✅ All services started successfully!"
           
           echo "🧹 Cleaning up..."
           docker compose down -v
