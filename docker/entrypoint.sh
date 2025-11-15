@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CMD="$1"
+CMD="${1:-web}"
 
 # ----------------------------
 # Wait for dependencies
