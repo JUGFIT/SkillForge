@@ -1,12 +1,15 @@
-#Dockerfile
-FROM python:3.11-slim AS base
+# Use stable Debian bookworm base instead of trixie
+FROM python:3.11-slim-bookworm AS base
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies with retry logic
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential gcc libpq-dev curl && \
+        build-essential \
+        gcc \
+        libpq-dev \
+        curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
