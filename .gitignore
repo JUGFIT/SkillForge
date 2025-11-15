@@ -1,141 +1,177 @@
-# ===============================
-# 🧠 SkillStack Project Gitignore
-# ===============================
+# =====================================================================
+# SkillStack 2.0 - Comprehensive .gitignore
+# =====================================================================
 
-# Environment files (ignore all except example)
+# =====================================================================
+# Environment Variables & Secrets
+# =====================================================================
 .env
 .env.*
-.env.local
-.env.*.local
+*.env
 !.env.example
+.env.local
+.env.production
+.env.staging
+.env.development
 
-# Virtual environment
-.venv/
-venv/
-env/
-ENV/
-
-# Python cache / bytecode
+# =====================================================================
+# Python
+# =====================================================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-*.egg
-*.egg-info/
-dist/
-build/
 .Python
-
-# Logs
-logs/
-*.log
-*.log.*
-
-# Build artifacts
-*.egg-info/
-dist/
 build/
-*.whl
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# OS & Editor junk
-.DS_Store
-Thumbs.db
+# =====================================================================
+# Virtual Environments
+# =====================================================================
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+.env/
+
+# =====================================================================
+# IDEs and Editors
+# =====================================================================
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
-.AppleDouble
-.LSOverride
-
-# IDE
-.vscode/
-.idea/
+.DS_Store
 *.sublime-project
 *.sublime-workspace
 .project
 .pydevproject
 .settings/
 
-# Docker
-*.pid
-*.sock
-docker-compose.override.yml
+# =====================================================================
+# Logs
+# =====================================================================
+*.log
+logs/
+app/static/logs/
+*.log.*
 
-# Coverage / testing
-.coverage
-.coverage.*
-htmlcov/
-.pytest_cache/
-.tox/
-.hypothesis/
-*.cover
-.cache
-nosetests.xml
-coverage.xml
-*.coveragerc
-
+# =====================================================================
 # Database
+# =====================================================================
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
 
+# =====================================================================
+# Testing
+# =====================================================================
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+htmlcov/
+
+# =====================================================================
+# Jupyter Notebook
+# =====================================================================
+.ipynb_checkpoints
+*.ipynb
+
+# =====================================================================
+# pyenv
+# =====================================================================
+.python-version
+
+# =====================================================================
 # Celery
+# =====================================================================
 celerybeat-schedule
 celerybeat.pid
 
-# MyPy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# =====================================================================
+# Docker
+# =====================================================================
+docker-compose.override.yml
+.dockerignore
 
-# Pyre type checker
-.pyre/
+# =====================================================================
+# Exports and Generated Files
+# =====================================================================
+app/static/exports/
+exports/
+*.pdf
+*.csv
+*.xlsx
 
-# pyenv
-.python-version
+# =====================================================================
+# Secrets and Keys
+# =====================================================================
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+*.crt
+*.cer
+secrets/
+credentials/
+credentials.json
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# Static files (if you generate them)
-staticfiles/
-media/
-
-# Temporary files
-*.tmp
-*.bak
-*.swp
-*.swo
-temp/
-tmp/
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-
-# Windows
+# =====================================================================
+# OS Files
+# =====================================================================
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# Linux
-*~
-.directory
-.Trash-*
-
-# Alembic (keep versions, ignore temp files)
+# =====================================================================
+# Alembic (keep versions, ignore cache)
+# =====================================================================
 alembic/__pycache__/
 alembic/versions/__pycache__/
 
-# Exports (if users generate reports/exports)
-app/static/exports/*.pdf
-app/static/exports/*.csv
-app/static/exports/*.xlsx
-!app/static/exports/.gitkeep
+# =====================================================================
+# Backup files
+# =====================================================================
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# =====================================================================
+# Node (if using any frontend tools)
+# =====================================================================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock*.env
